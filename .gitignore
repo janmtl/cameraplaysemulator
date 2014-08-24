@@ -1,0 +1,5 @@
+*.gb
+*.sav
+*.pyc
+test
+config/config.ini
