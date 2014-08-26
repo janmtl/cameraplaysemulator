@@ -7,9 +7,12 @@ from Emulator   import Emulator
 from Controller import Controller
 from Button     import Button, Box
 
+# Background Subtraction Scanner
 backsub = cv2.BackgroundSubtractorMOG()
 
-image_path = join(here, '../assets/images/')
+assets_path = join(here, '../assets/')
+image_path  = join(assets_path, 'images/')
+
 controller = Controller(config.CONTROLLER.WIDTH, config.CONTROLLER.HEIGHT, [
   Button('z', cv2.imread(abspath(join(image_path, "b.png")), 1),      Box(  0,   0, 160, 213)),
   Button('x', cv2.imread(abspath(join(image_path, "a.png")), 1),      Box(160,   0, 320, 213)),
@@ -21,28 +24,33 @@ controller = Controller(config.CONTROLLER.WIDTH, config.CONTROLLER.HEIGHT, [
   Button('e', cv2.imread(abspath(join(image_path, "start.png")), 1),  Box(160, 426, 320, 639)),
   Button('',  cv2.imread(abspath(join(image_path, "empty.png")), 1),  Box(320, 426, 480, 639))
 ])
-emulator = Emulator()
+#emulator = Emulator()
 
-capture = cv2.VideoCapture(0)
-if capture:
+capture = cv2.VideoCapture(abspath(join(assets_path,'vid_small.mp4')))
+if capture.isOpened():
   while True:
     ret, frame = capture.read()
     if ret:
+      #Find the position of the user
+      users = controller.scan(frame, backsub)
+
       #Display the controller
       controller.render(frame)
 
-      #Find the position of the user
-      user_position = controller.scan(frame, backsub)
-
       #Perform the user's action
-      controller.press(user_position[0], user_position[1], emulator)
+      # controller.vote(users, emulator)
 
       #Display the results
       cv2.imshow('Result', frame)
+    else:
+      print "No ret"
+      break
 
     escape = cv2.waitKey(33)
     if escape == 27 or escape == 1048603:
       break
+else:
+  print "No capture"
 
 # Clean up everything before leaving
 cv2.destroyAllWindows()

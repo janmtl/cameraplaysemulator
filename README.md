@@ -2,7 +2,7 @@ Camera Plays Emulator
 =====================
 A python app that uses the feed from a webcam to send commands to a video game emulator. The output is also automatically streamed to Twitch.tv.
 
-Based on [WhereIsTheFish](http://github.com/catherinemoresco/whereisthefish) which has popularly implemented for [FishPlaysPokemon](http://www.twitch.tv/fishplayspokemon).
+Based on [WhereIsTheFish](http://github.com/catherinemoresco/whereisthefish) which has been popularly implemented in [FishPlaysPokemon](http://www.twitch.tv/fishplayspokemon).
 
 This project is in cooperation with Alex Leavitt's [uscplayspokemon](http://github.com/alexleavitt/uscplayspokemon).
 

@@ -33,6 +33,6 @@ class Emulator:
 
   def press(self, button):
     if subprocess.call(["xdotool", "keydown", "--window", str(self.window._id), button.keycode]) != 0:
-        return
-    subprocess.call(["sleep", ".1"])
+      return
+    #subprocess.call(["sleep", ".1"])
     return subprocess.call(["xdotool", "keyup", "--window", str(self.window._id), button.keycode])

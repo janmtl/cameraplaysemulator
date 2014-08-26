@@ -1,5 +1,6 @@
 *.gb
 *.sav
 *.pyc
+*.mp4
 test
 config/config.ini
