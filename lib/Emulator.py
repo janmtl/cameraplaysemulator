@@ -12,12 +12,18 @@ class Window:
     self.w   = w
 
 class Emulator:
-  def __init__(self):
-    self.window = self.get_window()
+  def __init__(self, window_name, keyloglength, logfile):
+    self.window       = self.get_window(window_name)
+    self.keylog       = []
+    self.keyloglength = keyloglength
+    self.logfile      = logfile
 
-  def get_window(self):
+  def __repr__(self):
+    return 'Emulator: \n  window (_id): %s\n  position (x,y): (%s, %s)\n  size (w,h): (%s, %s)\n' % (self.window._id, self.window.x, self.window.y, self.window.w, self.window.h)
+
+  def get_window(self, window_name):
     #First find the right window
-    result = subprocess.check_output(["xdotool", "search","--sync", "--name", config.EMULATOR.NAME])
+    result = subprocess.check_output(["xdotool", "search","--sync", "--name", window_name])
     _id = result.split("\n")[-2]
 
     #Now extract the geometry
@@ -34,5 +40,5 @@ class Emulator:
   def press(self, button):
     if subprocess.call(["xdotool", "keydown", "--window", str(self.window._id), button.keycode]) != 0:
       return
-    #subprocess.call(["sleep", ".1"])
+    #ADD BUTTON TO KEYLOG HERE AND POP (KEYLOGLENGTH+1)th button
     return subprocess.call(["xdotool", "keyup", "--window", str(self.window._id), button.keycode])

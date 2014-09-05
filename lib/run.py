@@ -6,13 +6,15 @@ from Config     import config, here
 from Emulator   import Emulator
 from Controller import Controller
 from Button     import Button, Box
+from Stream     import Stream
 
 # Background Subtraction Scanner
 backsub = cv2.BackgroundSubtractorMOG()
-
+# Image assets
 assets_path = join(here, '../assets/')
 image_path  = join(assets_path, 'images/')
 
+#Define controller
 controller = Controller(config.CONTROLLER.WIDTH, config.CONTROLLER.HEIGHT, [
   Button('z', cv2.imread(abspath(join(image_path, "b.png")), 1),      Box(  0,   0, 160, 213)),
   Button('x', cv2.imread(abspath(join(image_path, "a.png")), 1),      Box(160,   0, 320, 213)),
@@ -23,25 +25,48 @@ controller = Controller(config.CONTROLLER.WIDTH, config.CONTROLLER.HEIGHT, [
   Button('q', cv2.imread(abspath(join(image_path, "select.png")), 1), Box(  0, 426, 160, 639)),
   Button('e', cv2.imread(abspath(join(image_path, "start.png")), 1),  Box(160, 426, 320, 639)),
   Button('',  cv2.imread(abspath(join(image_path, "empty.png")), 1),  Box(320, 426, 480, 639))
-])
-#emulator = Emulator()
+], config.CONTROLLER.MIN_BLOB_WIDTH, config.CONTROLLER.MIN_BLOB_HEIGHT)
+print controller
 
-capture = cv2.VideoCapture(abspath(join(assets_path,'vid_small.mp4')))
+#Define emulator
+emulator = Emulator(config.EMULATOR.NAME)
+print emulator
+
+#Define stage
+stage = Stage(config.STREAM.WIDTH, config.STREAM.HEIGHT, controller, config.CONTROLLER.TOP, config.CONTROLLER.LEFT)
+print stage
+
+#Define stream
+stream = Stream(config.STREAM.KEY,
+                config.STREAM.FFMPEG_BIN,
+                config.STREAM.FRAMES_PER_SECOND,
+                config.STREAM.OUTPUT_URI,
+                emulator.window,
+                config.STREAM.HEIGHT,
+                config.STREAM.WIDTH)
+print stream
+
+capture = cv2.VideoCapture(config.CONTROLLER.CAPTURE)
 if capture.isOpened():
+  stage_frame = controller.get_stage_frame()
+
   while True:
-    ret, frame = capture.read()
+    ret, capture_frame = capture.read()
     if ret:
       #Find the position of the user
-      users = controller.scan(frame, backsub)
+      users = controller.scan(capture_frame, backsub)
 
       #Display the controller
-      controller.render(frame)
+      controller.render(capture_frame)
 
       #Perform the user's action
-      # controller.vote(users, emulator)
+      controller.vote(users, emulator)
 
       #Display the results
-      cv2.imshow('Result', frame)
+      cv2.imshow('Stream', stage_frame)
+
+      #Stream the results
+      #stream.broadcast(frame)
     else:
       print "No ret"
       break
