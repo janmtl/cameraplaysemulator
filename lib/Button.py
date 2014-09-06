@@ -1,13 +1,6 @@
 import cv2
 import numpy as np
 
-class Box:
-  def __init__(self, top, left, bottom, right):
-    self.top    = top
-    self.left   = left
-    self.bottom = bottom
-    self.right  = right
-
 class Button:
   def __init__(self, keycode, image, box):
     self.keycode = keycode

@@ -2,11 +2,13 @@ from os.path import abspath, realpath, join
 import cv2, subprocess
 import numpy as np
 
+from Box        import Box
 from Config     import config, here
 from Emulator   import Emulator
 from Controller import Controller
-from Button     import Button, Box
+from Button     import Button
 from Stream     import Stream
+from Stage      import Stage
 
 # Background Subtraction Scanner
 backsub = cv2.BackgroundSubtractorMOG()
@@ -15,58 +17,87 @@ assets_path = join(here, '../assets/')
 image_path  = join(assets_path, 'images/')
 
 #Define controller
-controller = Controller(config.CONTROLLER.WIDTH, config.CONTROLLER.HEIGHT, [
-  Button('z', cv2.imread(abspath(join(image_path, "b.png")), 1),      Box(  0,   0, 160, 213)),
-  Button('x', cv2.imread(abspath(join(image_path, "a.png")), 1),      Box(160,   0, 320, 213)),
-  Button('w', cv2.imread(abspath(join(image_path, "up.png")), 1),     Box(320,   0, 480, 213)),
-  Button('s', cv2.imread(abspath(join(image_path, "down.png")), 1),   Box(  0, 213, 160, 426)),
-  Button('a', cv2.imread(abspath(join(image_path, "left.png")), 1),   Box(160, 213, 320, 426)),
-  Button('d', cv2.imread(abspath(join(image_path, "right.png")), 1),  Box(320, 213, 480, 426)),
-  Button('q', cv2.imread(abspath(join(image_path, "select.png")), 1), Box(  0, 426, 160, 639)),
-  Button('e', cv2.imread(abspath(join(image_path, "start.png")), 1),  Box(160, 426, 320, 639)),
-  Button('',  cv2.imread(abspath(join(image_path, "empty.png")), 1),  Box(320, 426, 480, 639))
-], config.CONTROLLER.MIN_BLOB_WIDTH, config.CONTROLLER.MIN_BLOB_HEIGHT)
+controller = Controller(box = Box(config.CONTROLLER.TOP, 
+                                  config.CONTROLLER.LEFT,
+                                  config.CONTROLLER.BOTTOM,
+                                  config.CONTROLLER.RIGHT),
+                        buttons = [
+                          Button('z', cv2.imread(abspath(join(image_path, "b.png")), 1),      Box(  0,   0, 160, 213)),
+                          Button('x', cv2.imread(abspath(join(image_path, "a.png")), 1),      Box(160,   0, 320, 213)),
+                          Button('w', cv2.imread(abspath(join(image_path, "up.png")), 1),     Box(320,   0, 480, 213)),
+                          Button('s', cv2.imread(abspath(join(image_path, "down.png")), 1),   Box(  0, 213, 160, 426)),
+                          Button('a', cv2.imread(abspath(join(image_path, "left.png")), 1),   Box(160, 213, 320, 426)),
+                          Button('d', cv2.imread(abspath(join(image_path, "right.png")), 1),  Box(320, 213, 480, 426)),
+                          Button('q', cv2.imread(abspath(join(image_path, "select.png")), 1), Box(  0, 426, 160, 639)),
+                          Button('e', cv2.imread(abspath(join(image_path, "start.png")), 1),  Box(160, 426, 320, 639)),
+                          Button('',  cv2.imread(abspath(join(image_path, "empty.png")), 1),  Box(320, 426, 480, 639))
+                        ],
+                        min_blob_width  = config.CONTROLLER.MIN_BLOB_WIDTH, 
+                        min_blob_height = config.CONTROLLER.MIN_BLOB_HEIGHT)
 print controller
 
 #Define emulator
-emulator = Emulator(config.EMULATOR.NAME)
+emulator = Emulator(box = Box(config.EMULATOR.TOP,
+                              config.EMULATOR.LEFT,
+                              config.EMULATOR.BOTTOM,
+                              config.EMULATOR.RIGHT),
+                    window_name   = config.EMULATOR.WINDOW_NAME,
+                    keylog_length = config.EMULATOR.KEYLOG_LENGTH,
+                    logfile       = config.EMULATOR.LOGFILE)
 print emulator
 
 #Define stage
-stage = Stage(config.STREAM.WIDTH, config.STREAM.HEIGHT, controller, config.CONTROLLER.TOP, config.CONTROLLER.LEFT)
+stage = Stage(box = Box(config.STAGE.TOP,
+                        config.STAGE.LEFT,
+                        config.STAGE.BOTTOM,
+                        config.STAGE.RIGHT),
+              controller_box = controller.box,
+              emulator_box   = emulator.box,
+              keylog_box = Box(config.KEYLOG.TOP,
+                               config.KEYLOG.LEFT,
+                               config.KEYLOG.BOTTOM,
+                               config.KEYLOG.RIGHT),
+              infopanel_box = Box(config.INFOPANEL.TOP,
+                                  config.INFOPANEL.LEFT,
+                                  config.INFOPANEL.BOTTOM,
+                                  config.INFOPANEL.RIGHT))
 print stage
 
 #Define stream
-stream = Stream(config.STREAM.KEY,
-                config.STREAM.FFMPEG_BIN,
-                config.STREAM.FRAMES_PER_SECOND,
-                config.STREAM.OUTPUT_URI,
-                emulator.window,
-                config.STREAM.HEIGHT,
-                config.STREAM.WIDTH)
-print stream
+# stream = Stream(key               = config.STREAM.KEY,
+#                 ffmpeg_bin        = config.STREAM.FFMPEG_BIN,
+#                 frames_per_second = config.STREAM.FRAMES_PER_SECOND,
+#                 output_uri        = config.STREAM.OUTPUT_URI,
+#                 emulator_window   = emulator.window)
+# print stream
 
 capture = cv2.VideoCapture(config.CONTROLLER.CAPTURE)
 if capture.isOpened():
-  stage_frame = controller.get_stage_frame()
-
+  stage_frame = stage.init_stage_frame()
   while True:
-    ret, capture_frame = capture.read()
+    ret, controller_frame = capture.read()
     if ret:
       #Find the position of the user
-      users = controller.scan(capture_frame, backsub)
-
-      #Display the controller
-      controller.render(capture_frame)
+      users = controller.scan(frame   = controller_frame,
+                              backsub = backsub)
 
       #Perform the user's action
-      controller.vote(users, emulator)
+      controller.vote(users    = users,
+                      emulator = emulator)
+
+      #Draw the controller on the capture_frame
+      controller.render(frame = controller_frame)
+
+      #Draw the stage
+      stage.render( stage_frame      = stage_frame,
+                    controller_frame = controller_frame, 
+                    keylog           = emulator.keylog)
 
       #Display the results
-      cv2.imshow('Stream', stage_frame)
+      cv2.imshow('Stage_frame', stage_frame)
 
       #Stream the results
-      #stream.broadcast(frame)
+      #stream.broadcast(stage_frame)
     else:
       print "No ret"
       break

@@ -1,20 +1,20 @@
-from Config import config
 import cv2
 
 class Controller:
-  def __init__(self, width, height, buttons, min_blob_width, min_blob_height):
-    self.width           = width
-    self.height          = height
+  def __init__(self, box, buttons, min_blob_width, min_blob_height):
+    self.box             = box
     self.buttons         = buttons
     self.min_blob_width  = min_blob_width
     self.min_blob_height = min_blob_height
 
   def __repr__(self):
-    return ('Controller: \n',
-            '  size (w,h): (%s, %s)\n',
-            '  buttons: %s\n',
+    return ('Controller: \n'
+            '  box: (%s, %s, %s, %s)\n'
+            '  buttons: %s\n'
             '  min blob size (w,h): (%s, %s)\n') \
-            % (self.width, self.height, len(self.buttons), self.min_blob_width, self.min_blob_height)
+            % (self.box.top, self.box.left, self.box.bottom, self.box.right,
+               len(self.buttons),
+               self.min_blob_width, self.min_blob_height)
 
   def render(self, frame):
     for button in self.buttons:
@@ -34,8 +34,7 @@ class Controller:
           votes[k] += 1
     emulator.press(self.buttons[votes.index(max(votes))])
 
-  @staticmethod
-  def scan(frame, backsub, blur = 5):
+  def scan(self, frame, backsub, blur = 5):
     fgmask = backsub.apply(cv2.blur(frame,(blur, blur)), None, 0.03)
     contours, hierarchy = cv2.findContours(fgmask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
   

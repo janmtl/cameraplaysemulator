@@ -1,26 +1,24 @@
-from config import config
 import subprocess
 
 class Stream:
-  def __init__(self, key, ffmpeg_bin, frames_per_second, output_uri, emulator_window, height, width):
+  def __init__(self, key, ffmpeg_bin, frames_per_second, output_uri, emulator_window):
     self.key               = key
     self.ffmpeg_bin        = ffmpeg_bin
     self.frames_per_second = frames_per_second
     self.output_uri        = output_uri
     self.emulator_window   = emulator_window
-    self.height            = height
-    self.width             = width
     self.stream_pipe       = self.get_stream_pipe()
 
   def __repr__(self):
-    return ('Stream: \n',
-            '  key: %s\n',
-            '  ffmpeg_bin: %s\n',
-            '  frames_per_second: %s\n',
-            '  output_uri: %s\n',
-            '  height: %s\n',
-            '  width: %s\n') \
-            % (self.key, self.ffmpeg_bin, self.frames_per_second, self.output_uri, self.height, self.width)
+    return ('Stream: \n'
+            '  key: %s\n'
+            '  ffmpeg_bin: %s\n'
+            '  frames_per_second: %s\n'
+            '  output_uri: %s\n') \
+            % (self.key,
+               self.ffmpeg_bin,
+               self.frames_per_second,
+               self.output_uri)
 
   def get_stream_pipe(self):
     command = [ self.ffmpeg_bin,
@@ -32,7 +30,7 @@ class Stream:
       '-r', '10', # frames per second
       '-i', '-', # The imput comes from a pipe
       '-f', 'x11grab',
-      '-s', str(self.emulator_window.w) + 'x' + str(self.emulator_window.h),
+      '-s', str(self.emulator_window.width) + 'x' + str(self.emulator_window.height),
       '-r', str(self.frames_per_second),
       '-i', ':0.0',
       '-f', 'alsa',
