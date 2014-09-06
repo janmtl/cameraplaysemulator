@@ -42,8 +42,8 @@ emulator = Emulator(box = Box(config.EMULATOR.TOP,
                               config.EMULATOR.BOTTOM,
                               config.EMULATOR.RIGHT),
                     window_name   = config.EMULATOR.WINDOW_NAME,
-                    keylog_length = config.EMULATOR.KEYLOG_LENGTH,
-                    logfile       = config.EMULATOR.LOGFILE)
+                    keylog_length = config.KEYLOG.MAXLEN,
+                    logdir        = join(here,config.EMULATOR.LOGDIR))
 print emulator
 
 #Define stage
@@ -57,19 +57,22 @@ stage = Stage(box = Box(config.STAGE.TOP,
                                config.KEYLOG.LEFT,
                                config.KEYLOG.BOTTOM,
                                config.KEYLOG.RIGHT),
+              keylog_step = config.KEYLOG.STEP,
               infopanel_box = Box(config.INFOPANEL.TOP,
                                   config.INFOPANEL.LEFT,
                                   config.INFOPANEL.BOTTOM,
-                                  config.INFOPANEL.RIGHT))
+                                  config.INFOPANEL.RIGHT),
+              infopanel_text = config.INFOPANEL.TEXT)
 print stage
 
 #Define stream
-# stream = Stream(key               = config.STREAM.KEY,
-#                 ffmpeg_bin        = config.STREAM.FFMPEG_BIN,
-#                 frames_per_second = config.STREAM.FRAMES_PER_SECOND,
-#                 output_uri        = config.STREAM.OUTPUT_URI,
-#                 emulator_window   = emulator.window)
-# print stream
+stream = Stream(stage             = stage,
+                key               = config.STREAM.KEY,
+                ffmpeg_bin        = config.STREAM.FFMPEG_BIN,
+                frames_per_second = config.STREAM.FRAMES_PER_SECOND,
+                output_uri        = config.STREAM.OUTPUT_URI,
+                emulator_window   = emulator.window)
+print stream
 
 capture = cv2.VideoCapture(config.CONTROLLER.CAPTURE)
 if capture.isOpened():
@@ -94,10 +97,10 @@ if capture.isOpened():
                     keylog           = emulator.keylog)
 
       #Display the results
-      cv2.imshow('Stage_frame', stage_frame)
+      #cv2.imshow('Stage_frame', stage_frame)
 
       #Stream the results
-      #stream.broadcast(stage_frame)
+      stream.broadcast(stage_frame)
     else:
       print "No ret"
       break
@@ -109,5 +112,6 @@ else:
   print "No capture"
 
 # Clean up everything before leaving
+emulator.logfile.close()
 cv2.destroyAllWindows()
 capture.release()

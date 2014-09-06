@@ -44,8 +44,8 @@ class Controller:
         if w > self.min_blob_width and h > self.min_blob_height:
             midx = (x+(w/2))
             midy = (y+(h/2))
-            #cv2.rectangle(frame, (x,y), (x+w,y+h), (255, 0, 0), 2)
-            #cv2.drawContours(frame, contour, -1, (255, 0, 0), 1)    
+            # cv2.rectangle(frame, (x,y), (x+w,y+h), (255, 0, 0), 2)
+            # cv2.drawContours(frame, contour, -1, (255, 0, 0), 1)    
             ccenters.append({'x': midx, 'y': midy})
   
     return ccenters

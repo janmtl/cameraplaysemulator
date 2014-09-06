@@ -1,4 +1,5 @@
 from os.path import abspath, realpath, join
+from collections import deque
 import cv2, subprocess
 import numpy as np
 
@@ -11,12 +12,13 @@ class Window:
     self.height = height
 
 class Emulator:
-  def __init__(self, box, window_name, keylog_length, logfile):
+  def __init__(self, box, window_name, keylog_length, logdir):
     self.box           = box
     self.window        = self.get_window(window_name)
-    self.keylog        = []
-    self.keylog_length = keylog_length
-    self.logfile       = logfile
+    self.keylog        = deque(maxlen=keylog_length)
+    self.logdir        = logdir
+    self.logfile       = open(join(self.logdir, 'keys.txt'), "w")
+    self.keycount      = 0
 
   def __repr__(self):
     return ('Emulator: \n'
@@ -24,14 +26,12 @@ class Emulator:
             '  window (_id): %s\n'
             '    position (x,y): (%s, %s)\n'
             '    size (w,h): (%s, %s)\n'
-            '  keylog_length: %s\n'
-            '  logfile: %s\n') \
+            '  logdir: %s\n') \
              % (self.box.top, self.box.left, self.box.bottom, self.box.right,
                 self.window._id,
                 self.window.x, self.window.y,
                 self.window.width, self.window.height,
-                self.keylog_length,
-                self.logfile)
+                self.logdir)
 
   def get_window(self, window_name):
     #First find the right window
@@ -54,6 +54,12 @@ class Emulator:
   def press(self, button):
     if subprocess.call(["xdotool", "keydown", "--window", str(self.window._id), button.keycode]) != 0:
       return
-    #ADD BUTTON TO KEYLOG HERE AND POP (KEYLOGLENGTH+1)th button
-    print button.keycode
+
+    self.keylog.appendleft(button)
+    self.logfile.write(button.keycode)
+    self.keycount += 1
+    if self.keycount >= 10000:
+      self.logfile.close()
+      self.logfile = open(join(self.logdir, 'keys' + str(self.keycount+1) + '.txt'), "w")
+
     return subprocess.call(["xdotool", "keyup", "--window", str(self.window._id), button.keycode])

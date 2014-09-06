@@ -3,4 +3,5 @@
 *.pyc
 *.mp4
 test
+logs
 config/config.ini

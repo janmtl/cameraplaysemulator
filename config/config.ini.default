@@ -13,20 +13,22 @@ LEFT = 0
 BOTTOM = 600
 RIGHT = 640
 WINDOW_NAME = "VBA"
-KEYLOG_LENGTH = 4
-LOGFILE = "logs/keys.txt"
+LOGDIR = "../logs"
 
 [KEYLOG]
 TOP = 600
 LEFT = 0
 BOTTOM = 720
 RIGHT = 1280
+MAXLEN = 8
+STEP = 160
 
 [INFOPANEL]
 TOP = 0
 LEFT = 0
 BOTTOM = 120
 RIGHT = 1280
+TEXT = "Camera Plays Emulator"
 
 [STAGE]
 TOP = 0
@@ -38,4 +40,4 @@ RIGHT = 1280
 FFMPEG_BIN = "ffmpeg"
 FRAMES_PER_SECOND = 15
 OUTPUT_URI = "rtmp://live.twitch.tv/app/"
-KEY = "*"
+KEY = ""

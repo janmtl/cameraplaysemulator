@@ -9,14 +9,15 @@ class Button:
     self.box     = box
 
   def render(self, frame, **kwargs):
-    position = kwargs.get('position', None)
+    box = kwargs.get('box', None)
 
-    if position:
-      cv2.rectangle(frame, (position.x,position.y), (position.x + (self.box.right-self.box.left), position.y + (self.box.bottom-self.box.top)), (255, 0, 0), 2)
-      frame[  position.y:position.y + (self.box.bottom-self.box.top),
-              position.x:position.x + (self.box.right-self.box.left)] *= self.mask
-      frame[  position.y:position.y + (self.box.bottom-self.box.top),
-              position.x:position.x + (self.box.right-self.box.left)] += self.image
+    if box:
+      cv2.rectangle(frame, (box.left,box.top), (box.right, box.bottom), (255, 0, 0), 2)
+      [image_box, frame_box] = self.box.intersect(box)
+      frame[frame_box.top:frame_box.bottom, frame_box.left:frame_box.right] \
+        *= self.mask[image_box.top:image_box.bottom, image_box.left:image_box.right] 
+      frame[frame_box.top:frame_box.bottom, frame_box.left:frame_box.right] \
+        += self.image[image_box.top:image_box.bottom, image_box.left:image_box.right] 
 
     else:
       cv2.rectangle(frame, (self.box.left,self.box.top), (self.box.right, self.box.bottom), (255, 0, 0), 2)
