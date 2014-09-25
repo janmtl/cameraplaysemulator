@@ -1,5 +1,7 @@
 from os.path import abspath, realpath, join
-import cv2, subprocess
+import subprocess
+import cv2
+import urllib
 import numpy as np
 
 from Box        import Box
@@ -30,7 +32,7 @@ controller = Controller(box = Box(config.CONTROLLER.TOP,
                           Button('d', cv2.imread(abspath(join(image_path, "right.png")), 1),  Box(320, 213, 480, 426)),
                           Button('q', cv2.imread(abspath(join(image_path, "select.png")), 1), Box(  0, 426, 160, 639)),
                           Button('e', cv2.imread(abspath(join(image_path, "start.png")), 1),  Box(160, 426, 320, 639)),
-                          Button('',  cv2.imread(abspath(join(image_path, "empty.png")), 1),  Box(320, 426, 480, 639))
+                          Button('x',  cv2.imread(abspath(join(image_path, "empty.png")), 1), Box(320, 426, 480, 639))
                         ],
                         min_blob_width  = config.CONTROLLER.MIN_BLOB_WIDTH, 
                         min_blob_height = config.CONTROLLER.MIN_BLOB_HEIGHT)
@@ -63,7 +65,9 @@ stage = Stage(box = Box(config.STAGE.TOP,
                                   config.INFOPANEL.BOTTOM,
                                   config.INFOPANEL.RIGHT),
               infopanel_text = config.INFOPANEL.TEXT)
+stage_frame = stage.init_stage_frame()
 print stage
+
 
 #Define stream
 stream = Stream(stage             = stage,
@@ -74,44 +78,41 @@ stream = Stream(stage             = stage,
                 emulator_window   = emulator.window)
 print stream
 
-capture = cv2.VideoCapture(config.CONTROLLER.CAPTURE)
-if capture.isOpened():
-  stage_frame = stage.init_stage_frame()
-  while True:
-    ret, controller_frame = capture.read()
-    if ret:
-      #Find the position of the user
-      users = controller.scan(frame   = controller_frame,
-                              backsub = backsub)
+stream=urllib.urlopen(config.CONTROLLER.CAPTURE)
+bytes=''
+while True:
+  bytes+=stream.read(1024)
+  a = bytes.find('\xff\xd8')
+  b = bytes.find('\xff\xd9')
+  if a!=-1 and b!=-1:
+    jpg = bytes[a:b+2]
+    bytes= bytes[b+2:]
+    controller_frame = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.CV_LOAD_IMAGE_COLOR)
+    
+    #Find the position of the user
+    users = controller.scan(frame   = controller_frame,
+                            backsub = backsub)
 
-      #Perform the user's action
-      controller.vote(users    = users,
-                      emulator = emulator)
+    #Perform the user's action
+    controller.bubble_vote(users    = users,
+                           emulator = emulator)
 
-      #Draw the controller on the capture_frame
-      controller.render(frame = controller_frame)
+    #Draw the controller on the capture_frame
+    controller.render(frame = controller_frame)
 
-      #Draw the stage
-      stage.render( stage_frame      = stage_frame,
-                    controller_frame = controller_frame, 
-                    keylog           = emulator.keylog)
+    #Draw the stage
+    stage.render( stage_frame      = stage_frame,
+                  controller_frame = controller_frame, 
+                  keylog           = emulator.keylog)
+    #Display the results
+    #cv2.imshow('Stage_frame', stage_frame)
 
-      #Display the results
-      #cv2.imshow('Stage_frame', stage_frame)
-
-      #Stream the results
-      stream.broadcast(stage_frame)
-    else:
-      print "No ret"
-      break
-
-    escape = cv2.waitKey(33)
-    if escape == 27 or escape == 1048603:
-      break
-else:
-  print "No capture"
+    #Stream the results
+    stream.broadcast(stage_frame)
+    
+    if cv2.waitKey(1) ==27:
+      exit(0)
 
 # Clean up everything before leaving
 emulator.logfile.close()
 cv2.destroyAllWindows()
-capture.release()

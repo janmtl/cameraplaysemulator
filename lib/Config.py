@@ -12,8 +12,6 @@ def parse_value(value):
       value = [convert_value(part.strip()) for part in value.split(',') if part.strip()]
     elif value.isdigit():
       value = int(value)
-    elif FLOAT_PATTERN.match(value):
-      value = float(value)
     elif value.lower() == 'true':
       value = True
     elif value.lower() == 'false':
