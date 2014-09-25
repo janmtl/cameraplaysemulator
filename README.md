@@ -43,3 +43,8 @@ See the [default configuration](config/config.ini.default) that we provide. It h
 - `FRAMES_PER_SECOND` is the rate set for ffmpeg
 - `OUTPUT_URI` is usually an `rtmp` protocol URI from Twitch
 - `KEY` is appended to the `OUTPUT_URI` when broadcasting
+
+TODO
+----
+- Fix the no emulator error
+- Fix the no log dir error

@@ -78,10 +78,10 @@ stream = Stream(stage             = stage,
                 emulator_window   = emulator.window)
 print stream
 
-stream=urllib.urlopen(config.CONTROLLER.CAPTURE)
+stream_uri = urllib.urlopen(config.CONTROLLER.CAPTURE)
 bytes=''
 while True:
-  bytes+=stream.read(1024)
+  bytes+=stream_uri.read(1024)
   a = bytes.find('\xff\xd8')
   b = bytes.find('\xff\xd9')
   if a!=-1 and b!=-1:
@@ -105,9 +105,10 @@ while True:
                   controller_frame = controller_frame, 
                   keylog           = emulator.keylog)
     #Display the results
-    #cv2.imshow('Stage_frame', stage_frame)
+    cv2.imshow('Stage_frame', stage_frame)
 
     #Stream the results
+    stream.init_stream_pipe()
     stream.broadcast(stage_frame)
     
     if cv2.waitKey(1) ==27:
