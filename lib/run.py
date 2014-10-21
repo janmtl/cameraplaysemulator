@@ -66,13 +66,13 @@ stage = Stage(box = Box(config.STAGE.TOP,
 print stage
 
 #Define stream
-stream = Stream(stage             = stage,
-                key               = config.STREAM.KEY,
-                ffmpeg_bin        = config.STREAM.FFMPEG_BIN,
-                frames_per_second = config.STREAM.FRAMES_PER_SECOND,
-                output_uri        = config.STREAM.OUTPUT_URI,
-                emulator_window   = emulator.window)
-print stream
+# stream = Stream(stage             = stage,
+#                 key               = config.STREAM.KEY,
+#                 ffmpeg_bin        = config.STREAM.FFMPEG_BIN,
+#                 frames_per_second = config.STREAM.FRAMES_PER_SECOND,
+#                 output_uri        = config.STREAM.OUTPUT_URI,
+#                 emulator_window   = emulator.window)
+# print stream
 
 capture = cv2.VideoCapture(config.CONTROLLER.CAPTURE)
 if capture.isOpened():
@@ -85,10 +85,10 @@ if capture.isOpened():
                               backsub = backsub)
 
       #Perform the user's action
-      controller.vote(users    = users,
-                      emulator = emulator)
+      controller.bubble_vote(users    = users,
+                             emulator = emulator)
 
-      #Draw the controller on the capture_frame
+      #Draw the controller on the controller_frame
       controller.render(frame = controller_frame)
 
       #Draw the stage
@@ -97,10 +97,10 @@ if capture.isOpened():
                     keylog           = emulator.keylog)
 
       #Display the results
-      #cv2.imshow('Stage_frame', stage_frame)
+      cv2.imshow('Stage_frame', stage_frame)
 
       #Stream the results
-      stream.broadcast(stage_frame)
+      # stream.broadcast(stage_frame)
     else:
       print "No ret"
       break

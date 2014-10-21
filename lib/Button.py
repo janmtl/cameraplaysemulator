@@ -7,6 +7,7 @@ class Button:
     self.image   = image
     self.mask    = self.getMaskFromImage(image)
     self.box     = box
+    self.votes   = 0
 
   def render(self, frame, **kwargs):
     box = kwargs.get('box', None)
