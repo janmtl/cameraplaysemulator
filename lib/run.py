@@ -78,16 +78,21 @@ stream = Stream(stage             = stage,
                 emulator_window   = emulator.window)
 print stream
 
-stream_uri = urllib.urlopen(config.CONTROLLER.CAPTURE)
-bytes=''
-while True:
-  bytes+=stream_uri.read(1024)
-  a = bytes.find('\xff\xd8')
-  b = bytes.find('\xff\xd9')
-  if a!=-1 and b!=-1:
-    jpg = bytes[a:b+2]
-    bytes= bytes[b+2:]
-    controller_frame = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.CV_LOAD_IMAGE_COLOR)
+#stream_uri = urllib.urlopen(config.CONTROLLER.CAPTURE)
+#bytes=''
+#while True:
+#  bytes+=stream_uri.read(1024)
+#  a = bytes.find('\xff\xd8')
+#  b = bytes.find('\xff\xd9')
+#  if a!=-1 and b!=-1:
+#    jpg = bytes[a:b+2]
+#    bytes= bytes[b+2:]
+#    controller_frame = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.CV_LOAD_IMAGE_COLOR)
+capture = cv2.VideoCapture(config.CONTROLLER.CAPTURE)
+if capture.isOpened():
+  stage_frame = stage.init_stage_frame()
+  while True:
+    ret, controller_frame = capture.read()
     
     #Find the position of the user
     users = controller.scan(frame   = controller_frame,
@@ -113,6 +118,9 @@ while True:
     
     if cv2.waitKey(1) ==27:
       exit(0)
+
+else:
+  print("config.CONTROLLER.CAPTURE did not open\n")
 
 # Clean up everything before leaving
 emulator.logfile.close()

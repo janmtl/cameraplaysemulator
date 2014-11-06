@@ -33,9 +33,10 @@ class Stream:
         '-r', '10', # frames per second
         '-i', '-',
         '-f', 'x11grab',
-        '-s', str(int(self.stage.emulator_box.right - self.stage.emulator_box.left)) + 'x' + str(int(self.stage.emulator_box.bottom - self.stage.emulator_box.top)),
+	'-s', 'cif',
+        #'-s', str(int(self.stage.emulator_box.right - self.stage.emulator_box.left)) + 'x' + str(int(self.stage.emulator_box.bottom - self.stage.emulator_box.top)),
         '-r', str(self.frames_per_second),
-        '-i', ':0+' + str(self.emulator_window.x) + '.0+' + str(self.emulator_window.y),
+        '-i', ':0.0+' + str(self.emulator_window.x) + ',' + str(self.emulator_window.y),
         '-f', 'alsa',
         '-i', 'pulse',
         '-f', 'flv',
@@ -61,6 +62,7 @@ class Stream:
         '-strict', 'normal',
         self.output_uri + self.key ]
   
+      print " ".join(command)
       self.stream_pipe = subprocess.Popen(command, stdin=subprocess.PIPE)
 
   def broadcast(self, frame):
