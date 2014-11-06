@@ -70,13 +70,13 @@ print stage
 
 
 #Define stream
-stream = Stream(stage             = stage,
-                key               = config.STREAM.KEY,
-                ffmpeg_bin        = config.STREAM.FFMPEG_BIN,
-                frames_per_second = config.STREAM.FRAMES_PER_SECOND,
-                output_uri        = config.STREAM.OUTPUT_URI,
-                emulator_window   = emulator.window)
-print stream
+# stream = Stream(stage             = stage,
+#                 key               = config.STREAM.KEY,
+#                 ffmpeg_bin        = config.STREAM.FFMPEG_BIN,
+#                 frames_per_second = config.STREAM.FRAMES_PER_SECOND,
+#                 output_uri        = config.STREAM.OUTPUT_URI,
+#                 emulator_window   = emulator.window)
+# print stream
 
 #stream_uri = urllib.urlopen(config.CONTROLLER.CAPTURE)
 #bytes=''

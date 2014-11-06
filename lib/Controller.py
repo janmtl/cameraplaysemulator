@@ -1,5 +1,5 @@
 import cv2
-from datetime    import datetime
+from datetime import datetime
 
 class Controller:
   def __init__(self, box, buttons, min_blob_width, min_blob_height):
@@ -30,13 +30,14 @@ class Controller:
         emulator.press(button)
         break
 
-  def vote(self, users, emulator):
-    votes = [0]*len(self.buttons)
+  def bubble_vote(self, users, emulator):
     for user in users:
       for k in xrange(0,len(self.buttons)):
         if self.buttons[k].hit(user['x'],user['y']):
-          votes[k] += 1
-    emulator.press(self.buttons[votes.index(max(votes))])
+          self.votes[k] += 1
+    if (datetime.now()-self.infopanel_epoch).seconds > config.CONTROLLER.BUBBLE_INTERVAL:
+      emulator.press(self.buttons[votes.index(max(votes))])
+      self.votes = [0]*len(self.buttons)
 
   def bubble_vote(self, users, emulator):
     for user in users:

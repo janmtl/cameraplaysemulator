@@ -4,11 +4,11 @@ import math
 
 class Button:
   def __init__(self, keycode, image, box):
-    self.keycode    = keycode
-    self.image      = image
-    self.mask       = self.getMaskFromImage(image)
-    self.box        = box
-    self.votes      = 0
+    self.keycode = keycode
+    self.image   = image
+    self.mask    = self.getMaskFromImage(image)
+    self.box     = box
+    self.votes   = 0
 
   def render(self, frame, **kwargs):
     box = kwargs.get('box', None)
