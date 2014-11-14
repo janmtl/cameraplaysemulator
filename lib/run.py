@@ -24,18 +24,23 @@ controller = Controller(box = Box(config.CONTROLLER.TOP,
                                   config.CONTROLLER.BOTTOM,
                                   config.CONTROLLER.RIGHT),
                         buttons = [
-                          Button('z', cv2.imread(abspath(join(image_path, "b.png")), 1),      Box(  0,   0, 160, 213)),
-                          Button('x', cv2.imread(abspath(join(image_path, "a.png")), 1),      Box(160,   0, 320, 213)),
-                          Button('w', cv2.imread(abspath(join(image_path, "up.png")), 1),     Box(320,   0, 480, 213)),
-                          Button('s', cv2.imread(abspath(join(image_path, "down.png")), 1),   Box(  0, 213, 160, 426)),
-                          Button('a', cv2.imread(abspath(join(image_path, "left.png")), 1),   Box(160, 213, 320, 426)),
-                          Button('d', cv2.imread(abspath(join(image_path, "right.png")), 1),  Box(320, 213, 480, 426)),
-                          Button('q', cv2.imread(abspath(join(image_path, "select.png")), 1), Box(  0, 426, 160, 639)),
-                          Button('e', cv2.imread(abspath(join(image_path, "start.png")), 1),  Box(160, 426, 320, 639)),
-                          Button('x',  cv2.imread(abspath(join(image_path, "empty.png")), 1), Box(320, 426, 480, 639))
+                          Button('q', cv2.imread(abspath(join(image_path, "select.png")), 1), Box(  0,   0, 192, 212)),
+                          Button('w', cv2.imread(abspath(join(image_path, "up.png")), 1),     Box(  0, 213, 192, 427)),
+                          Button('e', cv2.imread(abspath(join(image_path, "start.png")), 1),  Box(  0, 426, 192, 640)),
+
+                          Button('a', cv2.imread(abspath(join(image_path, "left.png")), 1),   Box(192,   0, 384, 212)),
+                          Button('s', cv2.imread(abspath(join(image_path, "down.png")), 1),   Box(192, 213, 384, 427)),
+                          Button('d', cv2.imread(abspath(join(image_path, "right.png")), 1),  Box(192, 426, 384, 640)),
+
+                          Button('z', cv2.imread(abspath(join(image_path, "b.png")), 1),      Box(384,   0, 480, 320)),
+                          Button('x', cv2.imread(abspath(join(image_path, "a.png")), 1),      Box(384, 320, 480, 640)),
+
+                          # Button('$', cv2.imread(abspath(join(image_path, "empty.png")), 1),  Box(320, 213, 480, 246))
+                          # '$' means random keypress
                         ],
                         min_blob_width  = config.CONTROLLER.MIN_BLOB_WIDTH, 
-                        min_blob_height = config.CONTROLLER.MIN_BLOB_HEIGHT)
+                        min_blob_height = config.CONTROLLER.MIN_BLOB_HEIGHT,
+                        press_interval  = config.CONTROLLER.PRESS_INTERVAL)
 print controller
 
 #Define emulator
@@ -91,37 +96,41 @@ print stream
 capture = cv2.VideoCapture(config.CONTROLLER.CAPTURE)
 if capture.isOpened():
   stage_frame = stage.init_stage_frame()
-  while True:
-    ret, controller_frame = capture.read()
-    
-    #Find the position of the user
-    users = controller.scan(frame   = controller_frame,
-                            backsub = backsub)
+  try: 
+    while True:
+      ret, controller_frame = capture.read()
+      
+      #Find the position of the user
+      users = controller.scan(frame   = controller_frame,
+                              backsub = backsub)
 
-    #Perform the user's action
-    controller.bubble_vote(users    = users,
-                           emulator = emulator)
+      #Perform the user's action
+      controller.vote(users    = users,
+                      emulator = emulator)
 
-    #Draw the controller on the capture_frame
-    controller.render(frame = controller_frame)
+      #Draw the controller on the capture_frame
+      controller.render(frame = controller_frame)
 
-    #Draw the stage
-    stage.render( stage_frame      = stage_frame,
-                  controller_frame = controller_frame, 
-                  keylog           = emulator.keylog)
-    #Display the results
-    cv2.imshow('Stage_frame', stage_frame)
+      #Draw the stage
+      stage.render( stage_frame      = stage_frame,
+                    controller_frame = controller_frame, 
+                    keylog           = emulator.keylog)
+      #Display the results
+      cv2.imshow('Stage_frame', stage_frame)
 
-    #Stream the results
-    stream.init_stream_pipe()
-    stream.broadcast(stage_frame)
-    
-    if cv2.waitKey(1) ==27:
-      exit(0)
+      #Stream the results
+      # stream.init_stream_pipe()
+      # stream.broadcast(stage_frame)
+      
+      if cv2.waitKey(1) ==27:
+        exit(0)
+  except KeyboardInterrupt:
+    pass
 
 else:
   print("config.CONTROLLER.CAPTURE did not open\n")
 
 # Clean up everything before leaving
+stream.kill()
 emulator.logfile.close()
 cv2.destroyAllWindows()

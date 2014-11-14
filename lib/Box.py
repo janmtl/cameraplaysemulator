@@ -7,6 +7,10 @@ class Box:
     self.bottom = bottom
     self.right  = right
 
+  def __repr__(self):
+    return ('Box: (%s, %s, %s, %s)\n') \
+             % (self.top, self.left, self.bottom, self.right)
+
   def intersect(self, target):
     image_box = Box(0,0,0,0)
     frame_box = Box(0,0,0,0)

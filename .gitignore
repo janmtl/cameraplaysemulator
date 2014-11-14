@@ -2,6 +2,7 @@
 *.sav
 *.pyc
 *.mp4
+*.mpg
 *.*~
 test
 logs

@@ -50,7 +50,5 @@ TODO
 - Fix the no log dir error
 - Make the x11grab automatically resize the emulator capture to fit the emulator box on the stage
 - Instead of "Randomize" say which key was pressed
-- Automatically kill the ffmpeg/avconv subprocess.call()
 - Fix the numpy --> avconv colour issue
-- Make an exit key that actually works and gracefully shuts everything down
 - Actually randomize the keys on randomize

@@ -76,3 +76,6 @@ class Stream:
 
   def broadcast(self, frame):
     self.stream_pipe.stdin.write(frame.tostring())
+
+  def kill(self):
+    self.stream_pipe.kill()
