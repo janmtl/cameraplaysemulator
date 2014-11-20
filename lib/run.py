@@ -119,8 +119,8 @@ if capture.isOpened():
       cv2.imshow('Stage_frame', stage_frame)
 
       #Stream the results
-      # stream.init_stream_pipe()
-      # stream.broadcast(stage_frame)
+      stream.init_stream_pipe()
+      stream.broadcast(stage_frame)
       
       if cv2.waitKey(1) ==27:
         exit(0)

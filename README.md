@@ -49,6 +49,5 @@ TODO
 - Fix the no emulator error
 - Fix the no log dir error
 - Make the x11grab automatically resize the emulator capture to fit the emulator box on the stage
-- Instead of "Randomize" say which key was pressed
-- Fix the numpy --> avconv colour issue
-- Actually randomize the keys on randomize
+- Add timestamps to log
+- Add runtime option for timer init

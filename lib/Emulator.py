@@ -46,8 +46,8 @@ class Emulator:
     y        = int(position[1].split(" ")[0])
     
     geometry = result.split("\n")[2][12:].split("x")
-    height   = int(geometry[0])
-    width    = int(geometry[1])
+    width    = int(geometry[0])
+    height   = int(geometry[1])
 
     return Window(_id, x, y, width, height)
 

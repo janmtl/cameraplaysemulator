@@ -24,29 +24,30 @@ class Stream:
   def init_stream_pipe(self):
     if not self.stream_pipe:
       command = [ self.ffmpeg_bin,
-        # Output
+        # Input from stageframe
           '-y',
           '-f', 'rawvideo',
           '-vcodec','rawvideo',
           # Output frame size
           '-s', str(int(self.stage.box.right - self.stage.box.left)) + 'x' + str(int(self.stage.box.bottom - self.stage.box.top)),
-          '-pix_fmt', 'rgb24',
+          '-pix_fmt', 'bgr24',
           # Frames per second
           '-r', str(self.frames_per_second),
           '-i', '-',
         # Input from emulator
         '-f', 'x11grab',
-          # Size of the emulator window
-          '-s', str(int(self.emulator.box.right - self.emulator.box.left)) + 'x' + str(int(self.emulator.box.bottom - self.emulator.box.top)),
-          ##'-s', 'cif',
+          # Size of the emulator window on the desktop
+          '-s', str(int(self.emulator.window.width)) + 'x' + str(int(self.emulator.window.height)), 
           # Frames per second
           '-r', str(self.frames_per_second),
           # x11grab arguments
           '-i', ':0.0+' + str(self.emulator.window.x) + ',' + str(self.emulator.window.y),
+          # Scale the x11grab frame
+          '-vf', 'scale='+ str(int(self.emulator.box.right - self.emulator.box.left)) + ':' + str(int(self.emulator.box.bottom - self.emulator.box.top)),
         # Sound input
         '-f', 'alsa',
           '-i', 'pulse',
-        # Input from stageframe
+        # Output
         '-f', 'flv',
           '-r', '10',
           # Overlay position
