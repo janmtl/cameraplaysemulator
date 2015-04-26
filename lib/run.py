@@ -13,7 +13,7 @@ from Stream     import Stream
 from Stage      import Stage
 
 # Background Subtraction Scanner
-backsub = cv2.BackgroundSubtractorMOG()
+backsub = cv2.bgsegm.createBackgroundSubtractorMOG()
 # Image assets
 assets_path = join(here, '../assets/')
 image_path  = join(assets_path, 'images/')
@@ -75,30 +75,43 @@ print stage
 
 
 #Define stream
-stream = Stream(stage             = stage,
-                emulator          = emulator,
-                key               = config.STREAM.KEY,
-                ffmpeg_bin        = config.STREAM.FFMPEG_BIN,
-                frames_per_second = config.STREAM.FRAMES_PER_SECOND,
-                output_uri        = config.STREAM.OUTPUT_URI)
-print stream
+if hasattr(config, 'STREAM'):
+  stream = Stream(stage             = stage,
+                  emulator          = emulator,
+                  key               = config.STREAM.KEY,
+                  ffmpeg_bin        = config.STREAM.FFMPEG_BIN,
+                  frames_per_second = config.STREAM.FRAMES_PER_SECOND,
+                  output_uri        = config.STREAM.OUTPUT_URI)
+  print stream
+else:
+  print "Streaming disabled in config"
 
-#stream_uri = urllib.urlopen(config.CONTROLLER.CAPTURE)
-#bytes=''
-#while True:
-#  bytes+=stream_uri.read(1024)
-#  a = bytes.find('\xff\xd8')
-#  b = bytes.find('\xff\xd9')
-#  if a!=-1 and b!=-1:
-#    jpg = bytes[a:b+2]
-#    bytes= bytes[b+2:]
-#    controller_frame = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.CV_LOAD_IMAGE_COLOR)
-capture = cv2.VideoCapture(config.CONTROLLER.CAPTURE)
-if capture.isOpened():
+
+if str(config.CONTROLLER.CAPTURE)[0:4]=="http":
+  capture_uri = urllib.urlopen(config.CONTROLLER.CAPTURE)
+  bytes=''
+  captureisopen = True
+  captureMode='http'
+else:
+  capture = cv2.VideoCapture(config.CONTROLLER.CAPTURE)
+  captureisopen = capture.isOpened()
+  captureMode='other'
+
+
+if captureisopen:
   stage_frame = stage.init_stage_frame()
   try: 
     while True:
-      ret, controller_frame = capture.read()
+      if captureMode=='http':
+        bytes+=capture_uri.read(1024)
+        a = bytes.find('\xff\xd8')
+        b = bytes.find('\xff\xd9')
+        if a!=-1 and b!=-1:
+          jpg = bytes[a:b+2]
+          bytes= bytes[b+2:]
+          controller_frame = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.CV_LOAD_IMAGE_COLOR)
+      else:
+        ret, controller_frame = capture.read()
       
       #Find the position of the user
       users = controller.scan(frame   = controller_frame,
@@ -119,8 +132,9 @@ if capture.isOpened():
       cv2.imshow('Stage_frame', stage_frame)
 
       #Stream the results
-      stream.init_stream_pipe()
-      stream.broadcast(stage_frame)
+      if hasattr(config, 'STREAM'):
+        stream.init_stream_pipe()
+        stream.broadcast(stage_frame)
       
       if cv2.waitKey(1) ==27:
         exit(0)

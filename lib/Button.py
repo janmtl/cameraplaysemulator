@@ -13,13 +13,20 @@ class Button:
 
   def render(self, frame, **kwargs):
     box = kwargs.get('box', None)
+    live = kwargs.get('live', None)
 
-    red   = min(4*self.votes, 255)
-    green = 0
-    blue  = 0
+    thickness = 2
+    if live:
+      red   = min(4*self.votes, 255)
+      green = 0
+      blue  = 0
+    else:
+      red   = 0
+      green = 0
+      blue  = 0   
 
     if box:
-      cv2.rectangle(frame, (box.left,box.top), (box.right, box.bottom), (blue, green, red), 2)
+      if live: cv2.rectangle(frame, (box.left+thickness/2,box.top+thickness/2), (box.right-thickness/2, box.bottom-thickness/2), (blue, green, red), thickness)
       image_box = Box(0,0,self.mask.shape[0], self.mask.shape[1])
       [image_box, frame_box] = image_box.intersect(box)
       frame[frame_box.top:frame_box.bottom, frame_box.left:frame_box.right] \
@@ -28,7 +35,7 @@ class Button:
         += self.image[image_box.top:image_box.bottom, image_box.left:image_box.right] 
 
     else:
-      cv2.rectangle(frame, (self.box.left,self.box.top), (self.box.right, self.box.bottom), (blue, green, red), 2)
+      if live: cv2.rectangle(frame, (self.box.left+thickness/2,self.box.top+thickness/2), (self.box.right-thickness/2, self.box.bottom-thickness/2), (blue, green, red), thickness)
       image_box = Box(0,0,self.mask.shape[0], self.mask.shape[1])
       [image_box, frame_box] = image_box.intersect(self.box)
       frame[frame_box.top:frame_box.bottom, frame_box.left:frame_box.right] \

@@ -23,7 +23,7 @@ class Controller:
   def render(self, frame):
     for idx, button in enumerate(self.buttons):
       button.votes = self.votes[idx]
-      button.render(frame)
+      button.render(frame, live=True)
 
   # def press(self, x, y, emulator):
   #   for button in self.buttons:
@@ -50,7 +50,7 @@ class Controller:
 
   def scan(self, frame, backsub, blur = 5):
     fgmask = backsub.apply(cv2.blur(frame,(blur, blur)), None, 0.03)
-    contours, hierarchy = cv2.findContours(fgmask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    fgmask, contours, hierarchy = cv2.findContours(fgmask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
   
     ccenters = []
     for contour in contours:
@@ -58,8 +58,8 @@ class Controller:
         if w > self.min_blob_width and h > self.min_blob_height:
             midx = (x+(w/2))
             midy = (y+(h/2))
-            cv2.rectangle(frame, (x,y), (x+w,y+h), (255, 0, 0), 2)
-            cv2.drawContours(frame, contour, -1, (255, 0, 0), 1)    
+            cv2.rectangle(frame, (x,y), (x+w,y+h), (0, 204, 255), 1)
+            cv2.drawContours(frame, contour, -1, (0, 204, 255), 2)    
             ccenters.append({'x': midx, 'y': midy})
   
     return ccenters

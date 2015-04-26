@@ -40,12 +40,12 @@ class Stage:
                 self.controller_box.left : self.controller_box.right] = controller_frame
 
     #Draw a placeholder for emulator box
-    cv2.rectangle(stage_frame, (self.emulator_box.left,self.emulator_box.top), (self.emulator_box.right,self.emulator_box.bottom), (0, 255, 0), 2)
-    cv2.line(stage_frame, (self.emulator_box.left,self.emulator_box.top), (self.emulator_box.right,self.emulator_box.bottom), (0, 255, 0), 2)
-    cv2.line(stage_frame, (self.emulator_box.left,self.emulator_box.bottom), (self.emulator_box.right,self.emulator_box.top), (0, 255, 0), 2)
+    cv2.rectangle(stage_frame, (self.emulator_box.left,self.emulator_box.top), (self.emulator_box.right,self.emulator_box.bottom), (10, 10, 10), 2)
+    cv2.line(stage_frame, (self.emulator_box.left,self.emulator_box.top), (self.emulator_box.right,self.emulator_box.bottom), (10, 10, 10), 2)
+    cv2.line(stage_frame, (self.emulator_box.left,self.emulator_box.bottom), (self.emulator_box.right,self.emulator_box.top), (10, 10, 10), 2)
 
     #Draw the keylog
-    stage_frame[self.keylog_box.top:self.keylog_box.bottom, self.keylog_box.left:self.keylog_box.right] = (0,0,0)
+    stage_frame[self.keylog_box.top:self.keylog_box.bottom, self.keylog_box.left:self.keylog_box.right] = (0,0,153)
     cursor = 0
     for button in keylog:
       key_box = Box(top = self.keylog_box.top,
@@ -56,11 +56,11 @@ class Stage:
       cursor += self.keylog_step
 
     #Draw the infopanel
-    stage_frame[self.infopanel_box.top:self.infopanel_box.bottom, self.infopanel_box.left:self.infopanel_box.right] = (0,0,0)
+    stage_frame[self.infopanel_box.top:self.infopanel_box.bottom, self.infopanel_box.left:self.infopanel_box.right] = (0,204,255)
     elapsed_time = (datetime.now()-self.infopanel_epoch).seconds
     cv2.putText(stage_frame,
                 (self.infopanel_text + ' (' + '{:02}:{:02}:{:02}'.format(elapsed_time // 3600, elapsed_time % 3600 // 60, elapsed_time % 60) + ')'),
-                (self.infopanel_box.left, self.infopanel_box.top + int(math.floor((self.infopanel_box.bottom - self.infopanel_box.top)/2))),
+                (self.infopanel_box.left+15, self.infopanel_box.top + int(math.floor((self.infopanel_box.bottom - self.infopanel_box.top)/2))),
                 cv2.FONT_HERSHEY_SIMPLEX, #font face
                 (self.infopanel_box.bottom - self.infopanel_box.top)/100, #font scale
-                (0, 255, 0), 2) #color and thickness
+                (0, 0, 153), 2) #color and thickness
