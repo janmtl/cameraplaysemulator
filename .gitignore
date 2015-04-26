@@ -4,6 +4,9 @@
 *.mp4
 *.mpg
 *.*~
+*.DS_Store
+*.sublime-project
+*.sublime-workspace
 test
 logs
 config/config.ini
