@@ -46,12 +46,18 @@ class Stage:
 
     #Draw the keylog
     stage_frame[self.keylog_box.top:self.keylog_box.bottom, self.keylog_box.left:self.keylog_box.right] = (0,0,153)
+    cv2.putText(stage_frame,
+                ('Last Press'),
+                (self.keylog_box.left+15, self.keylog_box.top + int(math.floor((self.keylog_box.bottom - self.keylog_box.top)/2))),
+                cv2.FONT_HERSHEY_TRIPLEX, #font face
+                (self.keylog_box.bottom - self.keylog_box.top)/100, #font scale
+                (255, 255, 255), 2) #color and thickness    
     cursor = 0
     for button in keylog:
       key_box = Box(top = self.keylog_box.top,
-                    left = self.keylog_box.left + cursor, 
+                    left = self.keylog_box.left + cursor + 200, 
                     bottom = self.keylog_box.bottom,
-                    right = self.keylog_box.left + cursor + self.keylog_step)
+                    right = self.keylog_box.left + cursor + self.keylog_step + 200)
       button.render(stage_frame, box = key_box)
       cursor += self.keylog_step
 
@@ -61,6 +67,6 @@ class Stage:
     cv2.putText(stage_frame,
                 (self.infopanel_text + ' (' + '{:02}:{:02}:{:02}'.format(elapsed_time // 3600, elapsed_time % 3600 // 60, elapsed_time % 60) + ')'),
                 (self.infopanel_box.left+15, self.infopanel_box.top + int(math.floor((self.infopanel_box.bottom - self.infopanel_box.top)/2))),
-                cv2.FONT_HERSHEY_SIMPLEX, #font face
+                cv2.FONT_HERSHEY_TRIPLEX, #font face
                 (self.infopanel_box.bottom - self.infopanel_box.top)/100, #font scale
                 (0, 0, 153), 2) #color and thickness

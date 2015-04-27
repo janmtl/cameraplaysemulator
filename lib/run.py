@@ -12,6 +12,10 @@ from Button     import Button
 from Stream     import Stream
 from Stage      import Stage
 
+# CV2 window setup
+cv2.namedWindow('Stage_frame', cv2.WND_PROP_FULLSCREEN)
+cv2.setWindowProperty('Stage_frame', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
 # Background Subtraction Scanner
 backsub = cv2.bgsegm.createBackgroundSubtractorMOG()
 # Image assets
@@ -24,16 +28,16 @@ controller = Controller(box = Box(config.CONTROLLER.TOP,
                                   config.CONTROLLER.BOTTOM,
                                   config.CONTROLLER.RIGHT),
                         buttons = [
-                          Button('q', cv2.imread(abspath(join(image_path, "select.png")), 1), Box(  0,   0, 192, 212)),
-                          Button('w', cv2.imread(abspath(join(image_path, "up.png")), 1),     Box(  0, 213, 192, 427)),
-                          Button('e', cv2.imread(abspath(join(image_path, "start.png")), 1),  Box(  0, 426, 192, 640)),
+                          Button('q', cv2.imread(abspath(join(image_path, "select.png")), 1), Box(  0,   0, 172, 212)),
+                          Button('w', cv2.imread(abspath(join(image_path, "up.png")), 1),     Box(  0, 213, 172, 427)),
+                          Button('e', cv2.imread(abspath(join(image_path, "start.png")), 1),  Box(  0, 426, 172, 640)),
 
-                          Button('a', cv2.imread(abspath(join(image_path, "left.png")), 1),   Box(192,   0, 384, 212)),
-                          Button('s', cv2.imread(abspath(join(image_path, "down.png")), 1),   Box(192, 213, 384, 427)),
-                          Button('d', cv2.imread(abspath(join(image_path, "right.png")), 1),  Box(192, 426, 384, 640)),
+                          Button('a', cv2.imread(abspath(join(image_path, "left.png")), 1),   Box(172,   0, 344, 212)),
+                          Button('s', cv2.imread(abspath(join(image_path, "down.png")), 1),   Box(172, 213, 344, 427)),
+                          Button('d', cv2.imread(abspath(join(image_path, "right.png")), 1),  Box(172, 426, 344, 640)),
 
-                          Button('z', cv2.imread(abspath(join(image_path, "b.png")), 1),      Box(384,   0, 480, 320)),
-                          Button('x', cv2.imread(abspath(join(image_path, "a.png")), 1),      Box(384, 320, 480, 640)),
+                          Button('z', cv2.imread(abspath(join(image_path, "b.png")), 1),      Box(344,   0, 480, 320)),
+                          Button('x', cv2.imread(abspath(join(image_path, "a.png")), 1),      Box(344, 320, 480, 640)),
 
                           # Button('$', cv2.imread(abspath(join(image_path, "empty.png")), 1),  Box(320, 213, 480, 246))
                           # '$' means random keypress
@@ -113,6 +117,9 @@ if captureisopen:
       else:
         ret, controller_frame = capture.read()
       
+      #Flip controller_frame
+      controller_frame = cv2.flip(controller_frame, 1)
+
       #Find the position of the user
       users = controller.scan(frame   = controller_frame,
                               backsub = backsub)

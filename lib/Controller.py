@@ -21,9 +21,10 @@ class Controller:
                self.min_blob_width, self.min_blob_height)
 
   def render(self, frame):
+    tot_votes = sum(self.votes)
     for idx, button in enumerate(self.buttons):
       button.votes = self.votes[idx]
-      button.render(frame, live=True)
+      button.render(frame, live=True, tot_votes = tot_votes)
 
   # def press(self, x, y, emulator):
   #   for button in self.buttons:

@@ -7,6 +7,7 @@
 *.DS_Store
 *.sublime-project
 *.sublime-workspace
+*.sgm
 test
 logs
 config/config.ini

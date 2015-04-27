@@ -14,10 +14,13 @@ class Button:
   def render(self, frame, **kwargs):
     box = kwargs.get('box', None)
     live = kwargs.get('live', None)
+    tot_votes = kwargs.get('tot_votes', 1)
+    tot_votes = max(tot_votes, 1)
 
-    thickness = 2
+    thickness = 6
     if live:
-      red   = min(4*self.votes, 255)
+      # red   = min(4*self.votes/tot_votes, 255)
+      red   = min(255*self.votes/tot_votes, 255)
       green = 0
       blue  = 0
     else:

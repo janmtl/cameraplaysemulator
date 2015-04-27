@@ -1,0 +1,50 @@
+[CONTROLLER]
+TOP = 120
+LEFT = 640
+BOTTOM = 600
+RIGHT = 1280
+CAPTURE = 0
+; CAPTURE = "~/Dropbox/dev/cameraplaysemulator/assets/vid_long_480.mp4"
+; CAPTURE = "rstp://uscplayspokemon:anaconda1suc@192.168.2.4:88/videoMain"
+; CAPTURE = "rstp://uscplayspokemon:anaconda1suc@securitycamera-ann310.usc.edu:88/videoMain"
+; CAPTURE = "http://securitycamera-ann310.usc.edu:88/cgi-bin/CGIStream.cgi?cmd=GetMJStream&usr=uscplayspokemon&pwd=anaconda1suc"
+MIN_BLOB_WIDTH = 5
+MIN_BLOB_HEIGHT = 10
+PRESS_INTERVAL = 1
+
+[EMULATOR]
+TOP = 120
+LEFT = 0
+BOTTOM = 600
+RIGHT = 640
+WINDOW_NAME = "VBA"
+LOGDIR = "../logs"
+
+[KEYLOG]
+TOP = 600
+LEFT = 0
+BOTTOM = 720
+RIGHT = 1280
+MAXLEN = 16
+STEP = 80
+
+[INFOPANEL]
+TOP = 0
+LEFT = 0
+BOTTOM = 120
+RIGHT = 1280
+TEXT = "USC Plays Pokemon"
+
+[STAGE]
+TOP = 0
+LEFT = 0
+BOTTOM = 720
+RIGHT = 1280
+
+; [STREAM]
+; FFMPEG_BIN = "avconv"
+; FRAMES_PER_SECOND = 15
+; OUTPUT_URI = "rtmp://live.twitch.tv/app/"
+; KEY = "live_69757572_js5qJZZQ2lns4vyCSdMlHjN2UVtZXL"
+; OUTPUT_URI = "out.mpg"
+; KEY = ""
